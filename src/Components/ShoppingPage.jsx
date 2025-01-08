@@ -2,32 +2,17 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleCart } from '../Slices/cartSlice';
 import { Modal, Button, Navbar, Container, Badge } from 'react-bootstrap';
+import { increaseQuantity,decreaseQuantity,setCartItems,removeCartItem } from '../Slices/cartSlice';
 
 const ShoppingPage = () => {
   const isCartVisible = useSelector((state) => state.cart.isVisible);
+  const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: 'Item 1', price: 10, quantity: 1 },
-    { id: 2, name: 'Item 2', price: 15, quantity: 2 },
-  ]);
+  
 
-  const increaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
+ 
 
-  const decreaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-  };
+ 
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -41,7 +26,7 @@ const ShoppingPage = () => {
             variant="outline-light"
             onClick={() => dispatch(toggleCart())}
           >
-            Cart <Badge bg="light" text="dark">{totalItems}</Badge>
+            Cart <Badge bg="light" text="dark">{cartItems.length}</Badge>
           </Button>
         </Container>
       </Navbar>
@@ -61,21 +46,21 @@ const ShoppingPage = () => {
                 >
                   <div>
                     <h6>{item.name}</h6>
-                    <p>${item.price.toFixed(2)}</p>
+                    <p>{item.price}</p>
                   </div>
                   <div>
                     <Button
                       variant="outline-secondary"
                       size="sm"
-                      onClick={() => decreaseQuantity(item.id)}
+                      onClick={() => dispatch(decreaseQuantity(item))}
                     >
                       -
                     </Button>
-                    <span className="mx-2">{item.quantity}</span>
+                    <span className="mx-2">{item.quantity<1?dispatch(removeCartItem(item)):item.quantity}</span>
                     <Button
                       variant="outline-secondary"
                       size="sm"
-                      onClick={() => increaseQuantity(item.id)}
+                      onClick={() => dispatch(increaseQuantity(item))}
                     >
                       +
                     </Button>
