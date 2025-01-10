@@ -2,19 +2,26 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleCart } from '../Slices/cartSlice';
 import { Modal, Button, Navbar, Container, Badge } from 'react-bootstrap';
-import { increaseQuantity,decreaseQuantity,setCartItems,removeCartItem } from '../Slices/cartSlice';
-
+// import { increaseQuantity,decreaseQuantity,setCartItems,removeCartItem } from '../Slices/cartSlice';
+import {decreaseCartItem , cartAction} from "../Actions/cartAction";
+import { updateItemQuantity } from '../Slices/cartSlice';
 const ShoppingPage = () => {
   const isCartVisible = useSelector((state) => state.cart.isVisible);
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
-  
+ 
+  const handleIncrease = (item) => {
+    dispatch(updateItemQuantity({ id: item.id, quantity: item.quantity + 1}));
+  };
+
+ 
+  const handleDecrease = (item) => {
+    dispatch(updateItemQuantity({ id: item.id, quantity: item.quantity - 1 }));
+  };
 
  
 
- 
-
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  // const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div>
@@ -52,15 +59,16 @@ const ShoppingPage = () => {
                     <Button
                       variant="outline-secondary"
                       size="sm"
-                      onClick={() => dispatch(decreaseQuantity(item))}
+                      onClick={()=>{handleDecrease(item)}}
+
                     >
                       -
                     </Button>
-                    <span className="mx-2">{item.quantity<1?dispatch(removeCartItem(item)):item.quantity}</span>
+                    <span className="mx-2">{item.quantity}</span>
                     <Button
                       variant="outline-secondary"
                       size="sm"
-                      onClick={() => dispatch(increaseQuantity(item))}
+                      onClick={()=>{handleIncrease(item)}}
                     >
                       +
                     </Button>

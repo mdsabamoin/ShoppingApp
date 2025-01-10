@@ -1,35 +1,29 @@
 import { useEffect, useState } from 'react';
 import Products from './Components/Products';
 import ShoppingPage from './Components/ShoppingPage';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import axios from "axios";
 import { Navbar, Container, Nav } from 'react-bootstrap';
+import {fetchCartItems} from "./Actions/cartAction";
+ import {getItem} from "./Slices/cartSlice"
+let initialState = false;
 
 function App() {
-  const [status, setStatus] = useState(null); // Tracks the status: "sending", "success", or "failed"
+  
   const [show, setShow] = useState(false); // Controls the visibility of the header
   const cart = useSelector((state) => state.cart);
+  const status = useSelector((state)=>state.cart.status);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        setStatus("sending");
-        setShow(true);
-        const response = await axios.put("https://shoppingapp-bfd38-default-rtdb.firebaseio.com/cart.json", cart);
-        if (response.status === 200) {
-          setStatus("success");
-        }
-      } catch (error) {
-        setStatus("failed");
-      }
-    };
-
-    fetchCart();
-  }, [cart]);
+   
+    dispatch(getItem());
+  }, [dispatch]);
+  
 
   return (
     <div className="App">
-      {show && (
+      {status && (
         <Navbar bg={status === "success" ? "success" : "dark"} variant="dark">
           <Container>
             {/* Top Left Corner */}
@@ -37,6 +31,7 @@ function App() {
               {status === "sending" && "Sending..."}
               {status === "success" && "Success"}
               {status === "failed" && "Error"}
+              {status === "fetching" && "Fetching"}
             </Navbar.Brand>
 
             {/* Top Right Corner */}
@@ -45,6 +40,7 @@ function App() {
                 {status === "sending" && "Sending Cart Data!"}
                 {status === "success" && "Sent Cart Data Successfully!"}
                 {status === "failed" && "Sending Cart Data Failed!"}
+                {status === "fetching" && "Loading Cart Details Failed"}
               </Nav.Link>
             </Nav>
           </Container>

@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import { increaseQuantity,decreaseQuantity,setCartItems,removeCartItem } from '../Slices/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
-
+// import {cartAction} from "../Actions/cartAction"
+import {postItem} from "../Slices/cartSlice";
+import { updateItemQuantity } from '../Slices/cartSlice';
 
 const Products = () => {
+
+  const cartItems = useSelector((state)=>state.cart.cartItems)
   const [items, setItems] = useState([
-    { id: 1, name: 'Item 1', price: 10, quantity: 1 },
-    { id: 2, name: 'Item 2', price: 15, quantity: 1 },
-    { id: 3, name: 'Item 3', price: 20, quantity: 1 },
+    {  name: 'Item 1', price: 10, quantity: 1 },
+    {  name: 'Item 2', price: 15, quantity: 1 },
+    {  name: 'Item 3', price: 20, quantity: 1 },
   ]);
   
     const dispatch = useDispatch();
@@ -16,7 +20,14 @@ const Products = () => {
 
   
   const addToCart = (item) => {
-    dispatch(setCartItems(item))
+    const isIteminCart = cartItems.some((Citem)=>Citem.name === item.name);
+    if(!isIteminCart){
+      console.log(cartItems);
+    dispatch(postItem(item))
+    }else{
+      return;
+    }
+    
   };
 
   return (
